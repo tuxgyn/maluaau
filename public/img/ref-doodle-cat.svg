@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="doodle-bg doodle-cat" viewBox="0 0 100 100" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M25,70 C25,50 35,40 50,40 C65,40 75,50 75,70 C75,80 65,88 50,88 C35,88 25,80 25,70 Z" />
+      <polygon points="30,42 22,20 40,34" fill="#fef3c7" />
+      <polygon points="70,42 78,20 60,34" fill="#fef3c7" />
+      <circle cx="42" cy="58" r="2.5" fill="#f59e0b" />
+      <circle cx="58" cy="58" r="2.5" fill="#f59e0b" />
+      <polygon points="50,65 46,62 54,62" fill="#f59e0b" />
+      <path d="M35,63 L20,60 M35,66 L18,67" />
+      <path d="M65,63 L80,60 M65,66 L82,67" />
+    </svg>
