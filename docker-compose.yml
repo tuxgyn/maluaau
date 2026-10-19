@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Servidor da aplicação Laravel (PHP 8.2 + Apache/Nginx ou PHP CLI Server)
+  app:
+    image: bitnami/laravel:latest
+    container_name: petshop_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000" # Porta ajustada conforme a APP_URL do seu .env
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-petshoop}
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-rootpassword}
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    networks:
+      - petshop-network
+
+  # Banco de Dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: petshop_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-petshoop}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpassword}
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # Compatível com a senha vazia do seu .env
+    ports:
+      - "3307:3306" # Mapeado para 3307 para não conflitar com MySQL/Postgres local ou n8n
+    volumes:
+      - petshop_db_data:/var/lib/mysql
+    networks:
+      - petshop-network
+
+networks:
+  petshop-network:
+    driver: bridge
+
+volumes:
+  petshop_db_data:
+    driver: local
