@@ -28,3 +28,4 @@ RUN sed -ri -s 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf
 
 # Ajustar permissões para o usuário do Apache (www-data)
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
