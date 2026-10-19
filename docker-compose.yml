@@ -1,37 +1,40 @@
 version: '3.8'
 
 services:
-  # Servidor da aplicação Laravel (PHP 8.2 + Apache/Nginx ou PHP CLI Server)
   app:
-    image: bitnami/laravel:latest
+    build: .
     container_name: petshop_app
     restart: unless-stopped
     ports:
-      - "8000:8000" # Porta ajustada conforme a APP_URL do seu .env
+      - "8000:80"
     environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=base64:DmcZrV9zVq8E5Habrqm+JWKQllmH2YtZEu6fz6m1QBs=
+      - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_DATABASE=${DB_DATABASE:-petshoop}
-      - DB_USERNAME=${DB_USERNAME:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-rootpassword}
+      - DB_DATABASE=petshoop
+      - DB_USERNAME=root
+      - DB_PASSWORD=SenhaForteSegura123!
     volumes:
-      - .:/app
+      - .:/var/www/html
     depends_on:
       - db
     networks:
       - petshop-network
 
-  # Banco de Dados MySQL
   db:
     image: mysql:8.0
     container_name: petshop_db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-petshoop}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpassword}
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # Compatível com a senha vazia do seu .env
-    ports:
-      - "3307:3306" # Mapeado para 3307 para não conflitar com MySQL/Postgres local ou n8n
+      MYSQL_DATABASE: petshoop
+      MYSQL_ROOT_PASSWORD: SenhaForteSegura123!
+      MYSQL_PASSWORD: SenhaForteSegura123!
+      MYSQL_USER: root
+    # Nota: A porta 3306 do MySQL NÃO está sendo mapeada para o host (sem a seção 'ports'), 
+    # garantindo isolamento total e segurança.
     volumes:
       - petshop_db_data:/var/lib/mysql
     networks:
