@@ -1,31 +1,19 @@
-FROM php:8.2-apache
+FROM node:22-alpine AS frontend
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --no-audit --no-fund
+COPY resources resources
+COPY public public
+COPY vite.config.js .
+RUN npm run build
 
-# Instalar dependências do sistema e extensões do PHP necessárias para o Laravel
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql gd zip
-
-# Habilitar o mod_rewrite do Apache para as rotas do Laravel
-RUN a2enmod rewrite
-
-# Definir o diretório de trabalho dentro do container
+FROM php:8.3-apache
+RUN apt-get update && apt-get install -y git unzip libzip-dev libpng-dev libicu-dev libonig-dev && docker-php-ext-install pdo_mysql mbstring bcmath exif pcntl gd intl zip && a2enmod rewrite
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
-
-# Copiar os arquivos do projeto para o container
-COPY . /var/www/html
-
-# Ajustar o DocumentRoot do Apache para a pasta 'public' do Laravel
-RUN sed -ri -s 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -s 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf
-
-# Ajustar permissões para o usuário do Apache (www-data)
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
+COPY . .
+COPY --from=frontend /app/public/build public/build
+RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader && chown -R www-data:www-data storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
+EXPOSE 80
+CMD ["apache2-foreground"]
